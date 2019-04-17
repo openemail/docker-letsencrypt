@@ -43,8 +43,8 @@ RUN set -x && \
     rm -rf /var/cache/apk/* && \
     rm -rf /etc/logrotate.d/acpid && \
     rm -rf /root/.cache /root/.subversion && \
-    cp -R /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
-    echo 'America/Vancouver' > /etc/timezone && \
+    cp -R /usr/share/zoneinfo/Asia/Colombo /etc/localtime && \
+    echo 'Asia/Colombo' > /etc/timezone && \
     echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
     \
 
