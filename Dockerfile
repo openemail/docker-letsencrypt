@@ -19,9 +19,9 @@ RUN set -x && \
     mkdir -p /usr/src/gocode && \
     export GOPATH=/usr/src/gocode && \
     go get github.com/mailhog/MailHog && \
-    go get github.com/mailhog/mhsendmailubuntu && \
+    go get github.com/mailhog/mhsendmail && \
     mv /usr/src/gocode/bin/MailHog /usr/local/bin && \
-    mv /usr/src/gocode/bin/mhsendmail /usr/local/bin &ubuntu& \
+    mv /usr/src/gocode/bin/mhsendmail /usr/local/bin && \
     rm -rf /usr/src/gocode && \
     apk del --purge .mailhog-build-dependencies && \
     adduser -D -u 1025 mailhog && \
