@@ -2,6 +2,34 @@
 
 [Letsencrypt](https://letsencrypt.org/) sets up an Nginx webserver and reverse proxy with php support and a built-in letsencrypt client that automates free SSL server certificate generation and renewal processes. It also contains fail2ban for intrusion prevention.
 
+* [s6 overlay](https://github.com/just-containers/s6-overlay) enabled for PID 1 Init capabilities
+* [zabbix-agent](https://zabbix.org) based on 4.0.x compiled for individual container monitoring.
+* Cron installed along with other tools (bash,curl, less, logrotate, nano, vim) for easier management.
+* MSMTP enabled to send mail from container to external SMTP server.
+* Ability to update User ID and Group ID Permissions for Development Purposes dyanmically.
+# Maintainers
+
+- [Chinthaka Deshapriya](https://www.linkedin.com/in/chinthakadeshapriya/)
+
+# Contributors
+ 
+ - [Amila Kothalawala](https://www.linkedin.com/in/amila-m-kothalawala/)
+
+# Table of Contents
+
+- [Introduction](#introduction)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Usage](#usage)
+    - [Creating a Docker Container](#creating-a-docker-container)
+    - [Using a docker-compose File](#using-a-docker-compose-file)
+- [Parameters](#parameters)
+- [User / Group Identifiers](#user-group-identifiers)
+- [Application Setup](Application-setup)
+    - [Validation and Initial Setup](#validation-and-initial-setup)
+    - [Site config and Reverse Proxy](#Site-config-and-reverse-proxy)
+    - [Using-Certs-in-Other-Containers](#using-certs-in-other-containers)
+
 # Usage
 
 Here are some example snippets to help you get started creating a container.
@@ -12,24 +40,22 @@ Here are some example snippets to help you get started creating a container.
 docker create \
   --name=letsencrypt \
   --cap-add=NET_ADMIN \
-  -e PUID=1000 \
-  -e PGID=1000 \
-  -e TZ=Europe/London \
-  -e URL=yourdomain.url \
+  -e PUID=1001 \
+  -e PGID=1002 \
+  -e TZ=Asia/Colombo \
+  -e URL=openemail.io \
   -e SUBDOMAINS=www, \
   -e VALIDATION=http \
-  -e DNSPLUGIN=cloudflare `#optional` \
-  -e DUCKDNSTOKEN=<token> `#optional` \
-  -e EMAIL=<e-mail> `#optional` \
+  -e EMAIL=devops@openemail.io `#optional` \
   -e DHLEVEL=2048 `#optional` \
   -e ONLY_SUBDOMAINS=false `#optional` \
-  -e EXTRA_DOMAINS=<extradomains> `#optional` \
+  -e EXTRA_DOMAINS=mail.cybergatelab.com `#optional` \
   -e STAGING=false `#optional` \
   -p 443:443 \
   -p 80:80 `#optional` \
   -v </path/to/appdata/config>:/config \
   --restart unless-stopped \
-  linuxserver/letsencrypt
+  openemail/letsencrypt:latest
 ```
 ## Using a docker-compose File
 
@@ -37,35 +63,34 @@ Compatible with docker-compose v2 schemas.
 
 ```
 ---
-version: "2"
+version: "2.1"
 services:
-  letsencrypt:
-    image: linuxserver/letsencrypt
-    container_name: letsencrypt
+  letsencrypt-openemail:
+    image: openemail/letsencrypt:latest
+    container_name: letsencrypt-openemail
+    hostname: letsencrypt-openemail
     cap_add:
       - NET_ADMIN
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/London
-      - URL=yourdomain.url
-      - SUBDOMAINS=www,
+      - PUID=1001
+      - PGID=1002
+      - TZ=Asia/Colomobo
+      - URL=openemail.io
+      - SUBDOMAINS=mail,
       - VALIDATION=http
-      - DNSPLUGIN=cloudflare #optional
-      - DUCKDNSTOKEN=<token> #optional
-      - EMAIL=<e-mail> #optional
+      - EMAIL=devops@openemail.io #optional
       - DHLEVEL=2048 #optional
-      - ONLY_SUBDOMAINS=false #optional
-      - EXTRA_DOMAINS=<extradomains> #optional
+      - ONLY_SUBDOMAINS=true #optional
+      - EXTRA_DOMAINS=mail.cybergatelab.com #optional
       - STAGING=false #optional
     volumes:
-      - </path/to/appdata/config>:/config
+      - ./data/conf/letsencrypt/config:/config
     ports:
       - 443:443
       - 80:80 #optional
     restart: unless-stopped
 ```
-## Parameters
+# Parameters
 
 Container images are configured using parameters passed at runtime (such as those above). These parameters are separated by a colon and indicate `<external>:<internal>` respectively. For example, `-p 8080:80` would expose port `80` from inside the container to be accessible from the host's IP on port `8080` outside the container.
 
@@ -88,7 +113,7 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-e STAGING=false` | Set to `true` to retrieve certs in staging mode. Rate limits will be much higher, but the resulting cert will not pass the browser's security test. Only to be used for testing purposes. |
 | `-v /config` | All the config files including the webroot reside here. |
 
-## User / Group Identifiers
+# User / Group Identifiers
 
 When using volumes (`-v` flags) permissions issues can arise between the host OS and the container, we avoid this issue by allowing you to specify the user `PUID` and group `PGID`.
 
@@ -102,9 +127,10 @@ In this instance `PUID=1000` and `PGID=1000`, to find yours use `id user` as bel
 ```
 
 &nbsp;
-## Application Setup
+# Application Setup
 
-### Validation and initial setup
+## Validation and Initial Setup
+
 * Before running this container, make sure that the url and subdomains are properly forwarded to this container's host, and that port 443 (and/or 80) is not being used by another service on the host (NAS gui, another webserver, etc.).
 * For `http` validation, port 80 on the internet side of the router should be forwarded to this container's port 80
 * For `tls-sni` validation, port 443 on the internet side of the router should be forwarded to this container's port 443
@@ -116,18 +142,24 @@ In this instance `PUID=1000` and `PGID=1000`, to find yours use `id user` as bel
 * If you need a dynamic dns provider, you can use the free provider duckdns.org where the `URL` will be `yoursubdomain.duckdns.org` and the `SUBDOMAINS` can be `www,ftp,cloud` with http validation, or `wildcard` with dns validation.
 * After setup, navigate to `https://yourdomain.url` to access the default homepage (http access through port 80 is disabled by default, you can enable it by editing the default site config at `/config/nginx/site-confs/default`).
 * Certs are checked nightly and if expiration is within 30 days, renewal is attempted. If your cert is about to expire in less than 30 days, check the logs under `/config/log/letsencrypt` to see why the renewals have been failing. It is recommended to input your e-mail in docker parameters so you receive expiration notices from letsencrypt in those circumstances.
-### Security and password protection
+
+## Security and password protection
+
 * The container detects changes to url and subdomains, revokes existing certs and generates new ones during start. It also detects changes to the DHLEVEL parameter and replaces the dhparams file.
 * If you'd like to password protect your sites, you can use htpasswd. Run the following command on your host to generate the htpasswd file `docker exec -it letsencrypt htpasswd -c /config/nginx/.htpasswd <username>`
 * You can add multiple user:pass to `.htpasswd`. For the first user, use the above command, for others, use the above command without the `-c` flag, as it will force deletion of the existing `.htpasswd` and creation of a new one
 * You can also use ldap auth for security and access control. A sample, user configurable ldap.conf is provided, and it requires the separate image [linuxserver/ldap-auth](https://hub.docker.com/r/linuxserver/ldap-auth/) to communicate with an ldap server.
-### Site config and reverse proxy
+
+## Site config and Reverse Proxy
+
 * The default site config resides at `/config/nginx/site-confs/default`. Feel free to modify this file, and you can add other conf files to this directory. However, if you delete the `default` file, a new default will be created on container start.
 * Preset reverse proxy config files are added for popular apps. See the `_readme` file under `/config/nginx/proxy_confs` for instructions on how to enable them
 * If you wish to hide your site from search engine crawlers, you may find it useful to add this configuration line to your site config, within the server block, above the line where ssl.conf is included
 `add_header X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";`
 This will *ask* Google et al not to index and list your site. Be careful with this, as you will eventually be de-listed if you leave this line in on a site you wish to be present on search engines
-### Using certs in other containers
+
+## Using Certs in Other Containers
+
 * This container includes auto-generated pfx and private-fullchain-bundle pem certs that are needed by other apps like Emby and Znc.
   * To use these certs in other containers, do either of the following:
   1. *(Easier)* Mount the letsencrypt config folder in other containers (ie. `-v /path-to-le-config:/le-ssl`) and in the other containers, use the cert location `/le-ssl/keys/letsencrypt/`
@@ -136,7 +168,9 @@ This will *ask* Google et al not to index and list your site. Be careful with th
   1. `cert.pem`, `chain.pem`, `fullchain.pem` and `privkey.pem`, which are generated by letsencrypt and used by nginx and various other apps
   2. `privkey.pfx`, a format supported by Microsoft and commonly used by dotnet apps such as Emby Server (no password)
   3. `priv-fullchain-bundle.pem`, a pem cert that bundles the private key and the fullchain, used by apps like ZNC
-### Using fail2ban
+
+## Using fail2ban
+
 * This container includes fail2ban set up with 3 jails by default:
   1. nginx-http-auth
   2. nginx-badbots
@@ -148,7 +182,7 @@ This will *ask* Google et al not to index and list your site. Be careful with th
 * You can unban an IP via `docker exec -it letsencrypt fail2ban-client set <jail name> unbanip <IP>`
 * A list of commands can be found here: https://www.fail2ban.org/wiki/index.php/Commands  
 
-## Support Info
+# Support Info
 
 * Shell access whilst the container is running: `docker exec -it letsencrypt /bin/bash`
 * To monitor the logs of the container in realtime: `docker logs -f letsencrypt`
