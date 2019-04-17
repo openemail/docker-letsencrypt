@@ -2,7 +2,7 @@
 
 - [Introduction](#introduction)
 - [Maintainer](#maintainer)
-- [Contributors](#contributora)
+- [Contributors](#contributors)
 - [Usage](#usage)
     - [Creating a Docker Container](#creating-a-docker-container)
     - [Using a docker-compose File](#using-a-docker-compose-file)
