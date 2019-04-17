@@ -1,29 +1,14 @@
-# Introduction
-
-[Letsencrypt](https://letsencrypt.org/) sets up an Nginx webserver and reverse proxy with php support and a built-in letsencrypt client that automates free SSL server certificate generation and renewal processes. It also contains fail2ban for intrusion prevention.
-
-* [s6 overlay](https://github.com/just-containers/s6-overlay) enabled for PID 1 Init capabilities
-* [zabbix-agent](https://zabbix.org) based on 4.0.x compiled for individual container monitoring.
-* Cron installed along with other tools (bash,curl, less, logrotate, nano, vim) for easier management.
-* MSMTP enabled to send mail from container to external SMTP server.
-* Ability to update User ID and Group ID Permissions for Development Purposes dyanmically.
-
-# Maintainers
-
-- [Chinthaka Deshapriya](https://www.linkedin.com/in/chinthakadeshapriya/)
-
-# Contributors
- 
- - [Amila Kothalawala](https://www.linkedin.com/in/amila-m-kothalawala/)
-
 # Table of Contents
 
 - [Introduction](#introduction)
+- [Maintainer](#maintainer)
+- [Contributors](#contributora)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Usage](#usage)
     - [Creating a Docker Container](#creating-a-docker-container)
     - [Using a docker-compose File](#using-a-docker-compose-file)
+- [Container Process Tree](#container-process-tree)    
 - [Parameters](#parameters)
     - [Additional Enivorenment Variables](#additional-enivorenment-variables)
 - [User / Group Identifiers](#user-group-identifiers)
@@ -36,8 +21,25 @@
  - [Updating-Info](#updating-info)
     - [Via Docker Run/Create](#via-docker-run-create)
     - [Via Docker Compose](#via-docker-compose)
- - [Original Copyrigh](https://github.com/linuxserver/docker-letsencrypt)
+ - [Original Copyright](https://github.com/linuxserver/docker-letsencrypt)
 
+# Introduction
+
+[Letsencrypt](https://letsencrypt.org/) sets up an Nginx webserver and reverse proxy with php support and a built-in letsencrypt client that automates free SSL server certificate generation and renewal processes. It also contains fail2ban for intrusion prevention.
+
+* [s6 overlay](https://github.com/just-containers/s6-overlay) enabled for PID 1 Init capabilities
+* [zabbix-agent](https://zabbix.org) based on 4.0.x compiled for individual container monitoring.
+* Cron installed along with other tools (bash,curl, less, logrotate, nano, vim) for easier management.
+* MSMTP enabled to send mail from container to external SMTP server.
+* Ability to update User ID and Group ID Permissions for Development Purposes dyanmically.
+
+# Maintainer
+
+- [Chinthaka Deshapriya](https://www.linkedin.com/in/chinthakadeshapriya/)
+
+# Contributors
+ 
+ - [Amila Kothalawala](https://www.linkedin.com/in/amila-m-kothalawala/)
 
 # Usage
 
@@ -99,6 +101,40 @@ services:
       - 80:80 #optional
     restart: unless-stopped
 ```
+# Container Process Tree
+
+If you run `docker top letsencrypt-openemail axcf` command you will get an output like below. `letsencrypt-openemail` is the container's name here.
+```
+PID                 TTY                 STAT                TIME                COMMAND
+27504               ?                   Ss                  0:00                \_ s6-svscan
+27589               ?                   S                   0:00                \_ s6-supervise
+27595               ?                   Ss                  0:00                | \_ zabbix_agentd
+29158               ?                   S                   0:00                | \_ zabbix_agentd
+29159               ?                   S                   0:00                | \_ zabbix_agentd
+29160               ?                   S                   0:00                | \_ zabbix_agentd
+29161               ?                   S                   0:00                | \_ zabbix_agentd
+27590               ?                   S                   0:00                \_ s6-supervise
+27591               ?                   S                   0:00                \_ s6-supervise
+27592               ?                   S                   0:00                \_ s6-supervise
+27593               ?                   Ss                  0:00                | \_ crond
+29103               ?                   S                   0:00                \_ s6-supervise
+29111               ?                   Ssl                 0:06                | \_ fail2ban-client
+29104               ?                   S                   0:00                \_ s6-supervise
+29110               ?                   Ss                  0:00                | \_ crond
+29105               ?                   S                   0:00                \_ s6-supervise
+29109               ?                   Ss                  0:00                | \_ nginx
+29162               ?                   S                   0:00                | \_ nginx
+29163               ?                   S                   0:00                | \_ nginx
+29164               ?                   S                   0:00                | \_ nginx
+29165               ?                   S                   0:00                | \_ nginx
+29166               ?                   S                   0:00                | \_ nginx
+29106               ?                   S                   0:00                \_ s6-supervise
+29108               ?                   Ss                  0:00                \_ php-fpm7
+29168               ?                   S                   0:00                \_ php-fpm7
+29169               ?                   S                   0:00                \_ php-fpm7
+```
+As per the above output `s6-svscan` will be the PID 1 inside the container which is exactly similar to `systemd` in your Linux host.
+
 # Parameters
 
 Container images are configured using parameters passed at runtime (such as those above). These parameters are separated by a colon and indicate `<external>:<internal>` respectively. For example, `-p 8080:80` would expose port `80` from inside the container to be accessible from the host's IP on port `8080` outside the container.
