@@ -1,15 +1,11 @@
-FROM alpine:3.9
-LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
-
+FROM linuxserver/letsencrypt:latest
+LABEL maintainer="Chinthka Deshapriya (chinthaka@cybergate.lk)"
 ### Set Defaults
 ENV DEBUG_MODE=FALSE \
     ENABLE_CRON=TRUE \
     ENABLE_SMTP=TRUE \
     ENABLE_ZABBIX=TRUE \
     TERM=xterm
-
-### Set Defaults/Arguments
-ARG S6_OVERLAY_VERSION=v1.21.7.0 
 
 RUN set -x && \
 
@@ -51,15 +47,12 @@ RUN set -x && \
     echo 'America/Vancouver' > /etc/timezone && \
     echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
     \
-### S6 Installation
-     curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - -C / && \
-     mkdir -p /assets/cron
 
 ### Networking Configuration
-EXPOSE 1025 8025 10050/TCP 
+EXPOSE 80 443 
 
 ### Add Folders
 ADD /install /
+ADD 
 
-### Entrypoint Configuration
-ENTRYPOINT ["/init"]
+
