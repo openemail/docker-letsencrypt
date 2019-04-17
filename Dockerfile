@@ -47,7 +47,6 @@ RUN set -x && \
     cp -R /usr/share/zoneinfo/Asia/Colombo /etc/localtime && \
     echo 'Asia/Colombo' > /etc/timezone &&  \
     echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers 
-
 ### Networking Configuration
 EXPOSE 80 443 
 
