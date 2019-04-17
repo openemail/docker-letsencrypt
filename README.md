@@ -1,4 +1,4 @@
-# Introductionn
+# Introduction
 
 [Letsencrypt](https://letsencrypt.org/) sets up an Nginx webserver and reverse proxy with php support and a built-in letsencrypt client that automates free SSL server certificate generation and renewal processes. It also contains fail2ban for intrusion prevention.
 
@@ -31,8 +31,6 @@ docker create \
   --restart unless-stopped \
   linuxserver/letsencrypt
 ```
-
-
 ## Using a docker-compose File
 
 Compatible with docker-compose v2 schemas.
