@@ -16,7 +16,7 @@
     - [Validation and Initial Setup](#validation-and-initial-setup)
     - [Site config and Reverse Proxy](#Site-config-and-reverse-proxy)
     - [Using-Certs-in-Other-Containers](#using-certs-in-other-containers)
-    - [using-fail2ban](##using-fail2ban)
+    - [using-fail2ban](#using-fail2ban)
  - [Support Info](#support-info)
  - [Updating-Info](#updating-info)
     - [Via Docker Run/Create](#via-docker-run-create)
