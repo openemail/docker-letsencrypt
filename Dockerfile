@@ -45,12 +45,12 @@ RUN set -x && \
     rm -rf /etc/logrotate.d/acpid && \
     rm -rf /root/.cache /root/.subversion && \
     cp -R /usr/share/zoneinfo/Asia/Colombo /etc/localtime && \
-    echo 'Asia/Colombo' > /etc/timezone &&  \
-    echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers 
+    echo 'Asia/Colombo' > /etc/timezone && \
+      echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers 
 ### Networking Configuration
 EXPOSE 80 443 
 
 ### Add Folders
-ADD /install /
+ADD /install /docker build --no-cache  -t openemail/letsencrypt:latest https://github.com/openemail/docker-letsencrypt.gi
 
 
