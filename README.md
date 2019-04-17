@@ -304,7 +304,7 @@ Below are the instructions for updating containers:
   
 ## Via Docker Run/Create
 
-* Update the image: `docker pull linuxserver/letsencrypt`
+* Update the image: `docker pull openemail/letsencrypt`
 * Stop the running container: `docker stop letsencrypt`
 * Delete the container: `docker rm letsencrypt`
 * Recreate a new container with the same docker create parameters as instructed above (if mapped correctly to a host folder, your `/config` folder and settings will be preserved)
@@ -314,8 +314,8 @@ Below are the instructions for updating containers:
 ## Via Docker Compose
 
 * Update all images: `docker-compose pull`
-  * or update a single image: `docker-compose pull letsencrypt`
+  * or update a single image: `docker-compose pull letsencrypt-openemail`
 * Let compose update all containers as necessary: `docker-compose up -d`
-  * or update a single container: `docker-compose up -d letsencrypt`
+  * or update a single container: `docker-compose up -d letsencrypt-openemail`
 * You can also remove the old dangling images: `docker image prune`
 
