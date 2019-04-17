@@ -7,6 +7,7 @@
 * Cron installed along with other tools (bash,curl, less, logrotate, nano, vim) for easier management.
 * MSMTP enabled to send mail from container to external SMTP server.
 * Ability to update User ID and Group ID Permissions for Development Purposes dyanmically.
+
 # Maintainers
 
 - [Chinthaka Deshapriya](https://www.linkedin.com/in/chinthakadeshapriya/)
@@ -24,11 +25,19 @@
     - [Creating a Docker Container](#creating-a-docker-container)
     - [Using a docker-compose File](#using-a-docker-compose-file)
 - [Parameters](#parameters)
+    - [Additional Enivorenment Variables](#additional-enivorenment-variables)
 - [User / Group Identifiers](#user-group-identifiers)
 - [Application Setup](Application-setup)
     - [Validation and Initial Setup](#validation-and-initial-setup)
     - [Site config and Reverse Proxy](#Site-config-and-reverse-proxy)
     - [Using-Certs-in-Other-Containers](#using-certs-in-other-containers)
+    - [using-fail2ban](##using-fail2ban)
+ - [Support Info](#support-info)
+ - [Updating-Info](#updating-info)
+    - [Via Docker Run/Create](#via-docker-run-create)
+    - [Via Docker Compose](#via-docker-compose)
+ - [Original Copyrigh](https://github.com/linuxserver/docker-letsencrypt)
+
 
 # Usage
 
@@ -113,6 +122,67 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-e STAGING=false` | Set to `true` to retrieve certs in staging mode. Rate limits will be much higher, but the resulting cert will not pass the browser's security test. Only to be used for testing purposes. |
 | `-v /config` | All the config files including the webroot reside here. |
 
+## Additional Enivorenment Variables
+
+Below is the complete list of available options that can be used to customize your installation.
+
+| Parameter         | Description                                                    |
+|-------------------|----------------------------------------------------------------|
+| `DEBUG_MODE`      | Enable Debug Mode - Default: `FALSE`                            |
+| `DEBUG_SMTP`      | Setup Mail Catch all on port 1025 (SMTP) and 8025 (HTTP) - Default: `FALSE` |
+| `ENABLE_CRON`     | Enable Cron - Default: `TRUE`                                   |
+| `ENABLE_SMTP`     | Enable SMTP services - Default: `TRUE`						|
+| `ENABLE_ZABBIX`   | Enable Zabbix Agent - Default: `TRUE`                           |
+| `TIMEZONE`        | Set Timezone - Default: `Asia/Colombo`                     |
+
+If you wish to have this send mail, set `ENABLE_SMTP=TRUE` and configure the following environment variables. See the [MSMTP Configuration Options](http://msmtp.sourceforge.net/doc/msmtp.html) for further information on options to configure MSMTP
+
+| Parameter         | Description                                                    |
+|-------------------|----------------------------------------------------------------|
+| `ENABLE_SMTP_GMAIL` | Add setting to supoprt sending through Gmail SMTP - Default: `FALSE` |
+| `SMTP_HOST`      | Hostname of SMTP Server - Default: `postfix-openemail`                            |
+| `SMTP_PORT`      | Port of SMTP Server - Default: `25`                            |
+| `SMTP_DOMAIN`     | HELO Domain - Default: `docker`                                   |
+| `SMTP_MAILDOMAIN`     | Mail Domain From - Default: `openemail.io`						|
+| `SMTP_AUTHENTICATION`     | SMTP Authentication - Default: `none`                                   |
+| `SMTP_USER`     | Enable SMTP services - Default: `user`						|
+| `SMTP_PASS`   | Enable SMTP services - Default: `password`                           |
+| `SMTP_TLS`        | Use TLS - Default: `off`                     |
+| `SMTP_STARTTLS`   | Start TLS from within Dession - Default: `off` |
+| `SMTP_TLSCERTCHECK` | Check remote certificate - Default: `off` |
+
+See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/2.2/manual/appendix/config/zabbix_agentd) for information about the following Zabbix values
+
+| Zabbix Parameters | Description                                                    |
+|-------------------|----------------------------------------------------------------|
+| `ZABBIX_LOGFILE` | Logfile Location - Default: `/var/log/zabbix/zabbix_agentd.log` |
+| `ZABBIX_LOGFILESIZE` | Logfile Size - Default: `1` |
+| `ZABBIX_DEBUGLEVEL` | Debug Level - Default: `1` |
+| `ZABBIX_REMOTECOMMANDS` | Enable Remote Commands (0/1) - Default: `1` |
+| `ZABBIX_REMOTECOMMANDS_LOG` | Enable Remote Commands Log (0/1)| - Default: `1` |
+| `ZABBIX_SERVER` | Allow connections from Zabbix Server IP - Default: `0.0.0.0/0` |
+| `ZABBIX_LISTEN_PORT` | Zabbix Agent Listening Port - Default: `10050` |
+| `ZABBIX_LISTEN_IP` | Zabbix Agent Listening IP - Default: `0.0.0.0` |
+| `ZABBIX_START_AGENTS` | How many Zabbix Agents to Start - Default: `3 | 
+| `ZABBIX_SERVER_ACTIVE` | Server for Active Checks - Default: `zabbix-openemail` |
+| `ZABBIX_HOSTNAME` | Container hostname to report to server - Default: `docker` |
+| `ZABBIX_REFRESH_ACTIVE_CHECKS` | Seconds to refresh Active Checks - Default: `120` |
+| `ZABBIX_BUFFER_SEND` | Buffer Send - Default: `5` |
+| `ZABBIX_BUFFER_SIZE` | Buffer Size - Default: `100` |
+| `ZABBIX_MAXLINES_SECOND` | Max Lines Per Second - Default: `20` |
+| `ZABBIX_ALLOW_ROOT` | Allow running as root - Default: `1` |
+| `ZABBIX_USER` | Zabbix user to start as - Default: `zabbix` |
+
+If you enable `DEBUG_PERMISSIONS=TRUE` all the users and groups have been modified in accordance with Environmental Variables will be displayed in output.
+e.g. If you add `USER_NGINX=1000` it will reset the containers `nginx` user id from `82` to `1000` - Hint, also change the Group ID to your local development users UID & GID
+and avoid Docker permission issues when developing.
+
+| Parameter | Description |
+|-----------|-------------|
+| `USER_<USERNAME>` |  The user's UID in /etc/passwd will be modified with new UID - Default `N/A` |
+| `GROUP_<GROUPNAME>` | The group's GID in /etc/group and /etc/passwd will be modified with new GID - Default `N/A` |
+| `GROUP_ADD_<USERNAME>` | The username will be added in /etc/group after the group name defined - Default `N/A` |
+
 # User / Group Identifiers
 
 When using volumes (`-v` flags) permissions issues can arise between the host OS and the container, we avoid this issue by allowing you to specify the user `PUID` and group `PGID`.
@@ -126,7 +196,6 @@ In this instance `PUID=1000` and `PGID=1000`, to find yours use `id user` as bel
     uid=1000(dockeruser) gid=1000(dockergroup) groups=1000(dockergroup)
 ```
 
-&nbsp;
 # Application Setup
 
 ## Validation and Initial Setup
@@ -191,13 +260,14 @@ This will *ask* Google et al not to index and list your site. Be careful with th
 * image version number
   * `docker inspect -f '{{ index .Config.Labels "build_version" }}' linuxserver/letsencrypt`
 
-## Updating Info
+# Updating Info
 
 Most of our images are static, versioned, and require an image update and container recreation to update the app inside. With some exceptions (ie. nextcloud, plex), we do not recommend or support updating apps inside the container. Please consult the [Application Setup](#application-setup) section above to see if it is recommended for the image.  
   
 Below are the instructions for updating containers:  
   
-### Via Docker Run/Create
+## Via Docker Run/Create
+
 * Update the image: `docker pull linuxserver/letsencrypt`
 * Stop the running container: `docker stop letsencrypt`
 * Delete the container: `docker rm letsencrypt`
@@ -205,16 +275,8 @@ Below are the instructions for updating containers:
 * Start the new container: `docker start letsencrypt`
 * You can also remove the old dangling images: `docker image prune`
 
-### Via Taisun auto-updater (especially useful if you don't remember the original parameters)
-* Pull the latest image at its tag and replace it with the same env variables in one shot:
-  ```
-  docker run --rm \
-  -v /var/run/docker.sock:/var/run/docker.sock taisun/updater \
-  --oneshot letsencrypt
-  ```
-* You can also remove the old dangling images: `docker image prune`
+## Via Docker Compose
 
-### Via Docker Compose
 * Update all images: `docker-compose pull`
   * or update a single image: `docker-compose pull letsencrypt`
 * Let compose update all containers as necessary: `docker-compose up -d`
