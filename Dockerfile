@@ -51,6 +51,6 @@ RUN set -x && \
 EXPOSE 80 443 
 
 ### Add Folders
-ADD /install /docker build --no-cache  -t openemail/letsencrypt:latest https://github.com/openemail/docker-letsencrypt.gi
+ADD /install /
 
 
