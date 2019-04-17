@@ -9,7 +9,7 @@ ENV DEBUG_MODE=FALSE \
     ZABBIX_HOSTNAME=letsencrypt-openemail
 
 RUN set -x && \
-
+    \     
 ### Install MailHog
     apk add -t .mailhog-build-dependencies \
             go \
@@ -46,7 +46,8 @@ RUN set -x && \
     rm -rf /root/.cache /root/.subversion && \
     cp -R /usr/share/zoneinfo/Asia/Colombo /etc/localtime && \
     echo 'Asia/Colombo' > /etc/timezone && \
-      echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers 
+    echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers 
+      
 ### Networking Configuration
 EXPOSE 80 443 
 
