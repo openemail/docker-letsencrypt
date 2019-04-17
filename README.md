@@ -1,51 +1,12 @@
-[![linuxserver.io](https://raw.githubusercontent.com/linuxserver/docker-templates/master/linuxserver.io/img/linuxserver_medium.png)](https://linuxserver.io)
-
-The [LinuxServer.io](https://linuxserver.io) team brings you another container release featuring :-
-
- * regular and timely application updates
- * easy user mappings (PGID, PUID)
- * custom base image with s6 overlay
- * weekly base OS updates with common layers across the entire LinuxServer.io ecosystem to minimise space usage, down time and bandwidth
- * regular security updates
-
-Find us at:
-* [Discord](https://discord.gg/YWrKVTn) - realtime support / chat with the community and the team.
-* [IRC](https://irc.linuxserver.io) - on freenode at `#linuxserver.io`. Our primary support channel is Discord.
-* [Blog](https://blog.linuxserver.io) - all the things you can do with our containers including How-To guides, opinions and much more!
-
-# [linuxserver/letsencrypt](https://github.com/linuxserver/docker-letsencrypt)
-[![](https://img.shields.io/discord/354974912613449730.svg?logo=discord&label=LSIO%20Discord&style=flat-square)](https://discord.gg/YWrKVTn)
-[![](https://images.microbadger.com/badges/version/linuxserver/letsencrypt.svg)](https://microbadger.com/images/linuxserver/letsencrypt "Get your own version badge on microbadger.com")
-[![](https://images.microbadger.com/badges/image/linuxserver/letsencrypt.svg)](https://microbadger.com/images/linuxserver/letsencrypt "Get your own version badge on microbadger.com")
-![Docker Pulls](https://img.shields.io/docker/pulls/linuxserver/letsencrypt.svg)
-![Docker Stars](https://img.shields.io/docker/stars/linuxserver/letsencrypt.svg)
-[![Build Status](https://ci.linuxserver.io/buildStatus/icon?job=Docker-Pipeline-Builders/docker-letsencrypt/master)](https://ci.linuxserver.io/job/Docker-Pipeline-Builders/job/docker-letsencrypt/job/master/)
-[![](https://lsio-ci.ams3.digitaloceanspaces.com/linuxserver/letsencrypt/latest/badge.svg)](https://lsio-ci.ams3.digitaloceanspaces.com/linuxserver/letsencrypt/latest/index.html)
+# Introductionn
 
 [Letsencrypt](https://letsencrypt.org/) sets up an Nginx webserver and reverse proxy with php support and a built-in letsencrypt client that automates free SSL server certificate generation and renewal processes. It also contains fail2ban for intrusion prevention.
 
-[![letsencrypt](https://raw.githubusercontent.com/linuxserver/docker-templates/master/linuxserver.io/img/le-logo-wide.png)](https://letsencrypt.org/)
-
-## Supported Architectures
-
-Our images support multiple architectures such as `x86-64`, `arm64` and `armhf`. We utilise the docker manifest for multi-platform awareness. More information is available from docker [here](https://github.com/docker/distribution/blob/master/docs/spec/manifest-v2-2.md#manifest-list) and our announcement [here](https://blog.linuxserver.io/2019/02/21/the-lsio-pipeline-project/). 
-
-Simply pulling `linuxserver/letsencrypt` should retrieve the correct image for your arch, but you can also pull specific arch images via tags.
-
-The architectures supported by this image are:
-
-| Architecture | Tag |
-| :----: | --- |
-| x86-64 | amd64-latest |
-| arm64 | arm64v8-latest |
-| armhf | arm32v7-latest |
-
-
-## Usage
+# Usage
 
 Here are some example snippets to help you get started creating a container.
 
-### docker
+## Creating a Docker Container
 
 ```
 docker create \
@@ -72,7 +33,7 @@ docker create \
 ```
 
 
-### docker-compose
+## Using a docker-compose File
 
 Compatible with docker-compose v2 schemas.
 
@@ -106,7 +67,6 @@ services:
       - 80:80 #optional
     restart: unless-stopped
 ```
-
 ## Parameters
 
 Container images are configured using parameters passed at runtime (such as those above). These parameters are separated by a colon and indicate `<external>:<internal>` respectively. For example, `-p 8080:80` would expose port `80` from inside the container to be accessible from the host's IP on port `8080` outside the container.
@@ -142,7 +102,6 @@ In this instance `PUID=1000` and `PGID=1000`, to find yours use `id user` as bel
   $ id username
     uid=1000(dockeruser) gid=1000(dockergroup) groups=1000(dockergroup)
 ```
-
 
 &nbsp;
 ## Application Setup
@@ -191,8 +150,6 @@ This will *ask* Google et al not to index and list your site. Be careful with th
 * You can unban an IP via `docker exec -it letsencrypt fail2ban-client set <jail name> unbanip <IP>`
 * A list of commands can be found here: https://www.fail2ban.org/wiki/index.php/Commands  
 
-
-
 ## Support Info
 
 * Shell access whilst the container is running: `docker exec -it letsencrypt /bin/bash`
@@ -232,73 +189,3 @@ Below are the instructions for updating containers:
   * or update a single container: `docker-compose up -d letsencrypt`
 * You can also remove the old dangling images: `docker image prune`
 
-## Versions
-
-* **12.04.19:** - Rebase aarch64 image to 3.9.
-* **25.03.19:** - Rebase aarch64 image back to 3.8 due to python issues (specifically with fail2ban), switch packages to python 3 on amd64 and armhf, clean up pip/python cache to shrink image size.
-* **23.03.19:** - Switching to new Base images, shift to arm32v7 tag.
-* **10.03.19:** - Add TLSv1.3 to ssl.conf.
-* **02.03.19:** - Add php intl and posix modules.
-* **27.02.19:** - Add gnupg package.
-* **22.02.19:** - Rebase to alpine 3.9.
-* **03.02.19:** - Removed memcached due to seccomp errors. Let us know if you need to re-enable memcached.
-* **28.01.19:** - Add pipeline logic and multi arch.
-* **21.01.19:** - Remove client_body_max from proxy.conf (existing users need to manually update).
-* **09.01.19:** - Remove tls v1 and v1.1 from default ssl.conf, update ciphers (existing users need to manually update).
-* **30.12.18:** - Fix bundle key generation.
-* **19.12.18:** - Add ipv6 and http/2 support to default site config.
-* **08.12.18:** - Had to remove cert renewal during container start due to certbot's new undocumented `feature` of up to 8 minute random delay.
-* **03.12.18:** - Fix silly bug resetting the duckdns token.
-* **02.12.18:** - Add dns validation support for ovh.
-* **20.11.18:** - Externalize reverse proxy confs to separate github repo `linuxserver/reverse-proxy-confs`, update baseimage packages during build
-* **19.11.18:** - Add php opcache package.
-* **12.11.18:** - Add support for duckdns wildcard certs via dns validation
-* **31.10.18:** - Add various preset proxy confs and fix others (thanks @nemchik and @hijxf)
-* **02.10.18:** - Fix fail2ban instructions and logrotate conf
-* **11.09.18:** - Add various preset proxy confs and fix others (thanks @nemchik and @LeoVerto)
-* **04.09.18:** - Linting fixes.
-* **30.08.18:** - Add support for ldap auth, add proxy confs for bazarr, couchpotato, headphones, lidarr and plex subfolder (thanks @nemchik and @jedahan)
-* **21.08.18:** - Rebase to alpine 3.8, add info on search engine de-listing
-* **08.08.18:** - Add subdomain proxy conf for plex, update emby proxy confs
-* **25.07.18:** - Add subdomain proxy conf for syncthing
-* **23.07.18:** - Remove backwards compatibility and set default validation method to http. Update portainer proxy config to fix websockets. Add unifi proxy conf.
-* **31.05.18:** - Update ssl.conf and proxy.conf for tighter security (thanks @nemchik)
-* **30.05.18:** - Add reverse proxy configs for jackett, monitorr, nzbget, nzbhydra, organizr, portainer and transmission (thanks @nemchik)
-* **18.05.18:** - Add more info on certs and unraid reverse proxy config
-* **11.05.18:** - Add php pgsql support
-* **24.04.18:** - Auto generate a private key + fullchain bundle pem that is needed by certain apps
-* **20.04.18:** - Add standardized optional reverse proxy conf files
-* **19.04.18:** - Bind memcached to localhost only, add php7-sqlite3
-* **08.04.18:** - Fix renewal hooks
-* **29.03.18:** - Create pfx cert after renewal for dns validation (previous version only created it for http and tls, an oversight)
-* **29.03.18:** - Fix staging for v2 api
-* **13.03.18:** - Support for wildcard cert with dns validation added. Switched to v2 api for ACME.
-* **21.02.18:** - Reduce shellcheck directives by renaming secondary variables
-* **20.02.18:** - Sanitize variables, increase log verbosity
-* **01.02.18:** - Big changes. `VALIDATION` parameter added for choosing letsencrypt validation methods, including dns through official plugins. `HTTPVAL` is deprecated. `STAGING` parameter added for testing. Backwards compatibility for the short term. Since tls-sni is disabled by letsencrypt, most users will have to change their settings and adopt the new parameters within the next 90 days. Reorganized the nginx default config, split ssl settings into new ssl.conf
-* **13.01.18:** - Re-enable ipv6 due to update to fail2ban 0.10.1. Existing users can enable ipv6 by deleting `/config/fail2ban/action.d/iptables-common.local` and restarting the container after updating the image
-* **11.01.18:** - Halt the container if validation fails instead of a stop (so restart=always doesn't get users throttled with letsencrypt)
-* **10.01.18:** - Add option for http validation on port 80
-* **05.01.18:** - Rebase to alpine 3.7
-* **04.11.17:** - Add php7 soap module
-* **31.10.17:** - Add php7 exif and xmlreader modules
-* **25.09.17:** - Manage fail2ban via s6
-* **24.09.17:** - Add memcached service
-* **01.09.17:** - `--privileged` is no longer required as long as `--cap-add=NET_ADMIN` is added, instructions modified accordingly, disabled fail2ban ipv6 actions due to requiring access to host kernel modules
-* **31.08.17:** - Add php7-phar
-* **14.07.17:** - Enable modules dynamically in nginx.conf
-* **06.07.17:** - Add support for multiple domains (thanks @oznu)
-* **22.06.17:** - Add various nginx modules and enable all modules in the default nginx.conf
-* **16.06.17:** - Update deprecated certbot option for https validation, make e-mail entry optional, update readme
-* **05.06.17:** - Add php7-bz2
-* **27.05.17:** - Rebase to alpine 3.6.
-* **03.05.17:** - Fix log permissions.
-* **18.04.17:** - Add php7-sockets, update fail2ban filter and action defaults
-* **27.02.17:** - Add php7-dom, php7-iconv and php7-pdo_sqlite
-* **21.02.17:** - Add php7-xml
-* **10.02.17:** - Switch to alpine 3.5 base and php7, add php zlib module and all nginx modules
-* **13.01.17:** - Add php5-ctype and php5-openssl
-* **04.01.17:** - Add php5-mysqli and php5-pdo_mysql
-* **22.11.16:** - Add gd and mcrypt packages
-* **21.11.16:** - Add curl package
-* **07.11.16:** - Initial Release
