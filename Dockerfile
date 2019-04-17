@@ -5,7 +5,8 @@ ENV DEBUG_MODE=FALSE \
     ENABLE_CRON=TRUE \
     ENABLE_SMTP=TRUE \
     ENABLE_ZABBIX=TRUE \
-    TERM=xterm
+    TERM=xterm \
+    ZABBIX_HOSTNAME=letsencrypt-openemail
 
 RUN set -x && \
 
@@ -18,9 +19,9 @@ RUN set -x && \
     mkdir -p /usr/src/gocode && \
     export GOPATH=/usr/src/gocode && \
     go get github.com/mailhog/MailHog && \
-    go get github.com/mailhog/mhsendmail && \
+    go get github.com/mailhog/mhsendmailubuntu && \
     mv /usr/src/gocode/bin/MailHog /usr/local/bin && \
-    mv /usr/src/gocode/bin/mhsendmail /usr/local/bin && \
+    mv /usr/src/gocode/bin/mhsendmail /usr/local/bin &ubuntu& \
     rm -rf /usr/src/gocode && \
     apk del --purge .mailhog-build-dependencies && \
     adduser -D -u 1025 mailhog && \
@@ -53,6 +54,5 @@ EXPOSE 80 443
 
 ### Add Folders
 ADD /install /
-ADD 
 
 
