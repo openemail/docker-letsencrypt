@@ -19,7 +19,7 @@
  - [Updating-Info](#updating-info)
     - [Via Docker Run/Create](#via-docker-run-create)
     - [Via Docker Compose](#via-docker-compose)
- - [Original Copyright](https://github.com/linuxserver/docker-letsencrypt)
+ - [Base Image](https://github.com/linuxserver/docker-letsencrypt)
 
 # Introduction
 
